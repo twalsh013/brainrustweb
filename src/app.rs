@@ -1,3 +1,8 @@
+use std::path::Path;
+use std::io::{BufReader, Read};
+use std::fs::File;
+use gloo::{self, console};//, file};
+use wasm_bindgen::JsValue;
 //use std::io::prelude::*;
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -133,15 +138,34 @@ impl eframe::App for TemplateApp {
             ui.heading("Basic as hell Rust/WASM Brainfuck Interpreter");
 
             ui.horizontal(|ui| {
-                ui.label("Enter some Brainfuck code: ");
-                ui.text_edit_singleline(label);
-            });
+            ui.label("Enter some Brainfuck code: ");
+            ui.text_edit_singleline(label);
+        });
 
             //let mut result = String::new();
 
             if ui.button("Run").clicked() {
                 let contents = label.clone();
                 *result = interpret(contents);
+                let input = gloo::dialogs::prompt("Enter file path:",None);
+                *result = match input {
+                    Some(stuff) => stuff,
+                    None => "Fuck".to_string(),
+                };
+
+                /*match input {
+                    Some(path) => {
+                        let file_path = Path::new(&path);
+                        let file = File::open(&file_path).expect("Unable to open file");
+                        let mut buf_reader = BufReader::new(file);
+                        let mut contents = String::new();
+                        buf_reader.read_to_string(&mut contents).expect("Unable to read file");
+                        gloo::console::log!(JsValue::from(contents));
+                    }
+                    None => {
+                        gloo::console::log!(JsValue::from("No file path entered"));
+                    }
+                }*/
             }
 
             //ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
