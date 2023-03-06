@@ -383,6 +383,7 @@ dependencies = [
  "gloo",
  "gloo-file 0.2.3",
  "gloo-utils",
+ "lazy_static",
  "rfd",
  "serde",
  "tracing-subscriber",

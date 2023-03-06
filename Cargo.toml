@@ -33,6 +33,7 @@ gloo-file = "0.2.3"
 gloo-utils = "0.1.6"
 web-sys = {version = "0.3.61", features = ['Document', 'console', 'Element','HtmlElement','Node','Window']}
 rfd = "0.11.1"
+lazy_static = "1.4.0"
 
 [profile.release]
 opt-level = 2 # fast and small wasm
