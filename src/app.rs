@@ -96,7 +96,7 @@ impl Default for TemplateApp {
     fn default() -> Self {
         Self {
             // Example stuff:
-            label: ">++++++++++++++++++++++++++++++++++++++++++++++++<++++++++++[>.+<-]".to_owned(),
+            label: "+".to_owned(),
             result: "".to_owned(),
             //value: 2.7,
         }
@@ -159,7 +159,7 @@ impl eframe::App for TemplateApp {
             //static mut CHECKED: bool = false;
 
             if ui.button("Run").clicked() {
-                let contents = label.clone();
+                let _contents = label.clone();
 
                 //unsafe {
                 //    CHECKED = true;
@@ -198,7 +198,7 @@ impl eframe::App for TemplateApp {
                 //     log_1(&"oops".into());
                 //    }
 
-                *result = interpret(contents);
+                //*result = interpret(contents);
 
                 //let tmp = answerb.lock().unwrap();
                 // let myvec = match tmp {
@@ -235,8 +235,8 @@ impl eframe::App for TemplateApp {
             //match MYCHAN.lock().unwrap().1.try_recv() {
             if let Ok(msg) = MYCHAN.lock().unwrap().1.try_recv() {
                 let stmsg = String::from_utf8(msg).unwrap();
-                *result = stmsg.clone();
-                let jsmsg: JsValue = stmsg.into();
+                *result = interpret(stmsg.clone());
+                let jsmsg: JsValue = result.clone().into();
                 log_1(&jsmsg);
                 log_1(&"something".into());
                 //log_1(&jsmsg);
