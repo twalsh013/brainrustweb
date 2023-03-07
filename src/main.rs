@@ -1,10 +1,10 @@
 #![warn(clippy::all, rust_2018_idioms)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
-use std::future::Future;
-use rfd::AsyncFileDialog;
-use web_sys::console;
-use wasm_bindgen::JsValue;
-// When compiling natively:
+                                                                   //use rfd::AsyncFileDialog;
+                                                                   //use std::future::Future;
+                                                                   //use wasm_bindgen::JsValue;
+                                                                   //use web_sys::console;
+                                                                   // When compiling natively:
 #[cfg(not(target_arch = "wasm32"))]
 fn main() -> eframe::Result<()> {
     // Log to stdout (if you run with `RUST_LOG=debug`).
@@ -20,6 +20,7 @@ fn main() -> eframe::Result<()> {
 
 // when compiling to web using trunk.
 #[cfg(target_arch = "wasm32")]
+#[allow(clippy::all)]
 fn main() {
     // Make sure panics are logged using `console.error`.
     console_error_panic_hook::set_once();
@@ -39,10 +40,9 @@ fn main() {
     //         // If you care about wasm support you just read() the file
     //         let mystring = String::from_utf8(file.read().await).unwrap();
     //         let js: JsValue = mystring.into();
-    //         console::log_1(&js);      
+    //         console::log_1(&js);
     //     }
     // });
-
 
     let web_options = eframe::WebOptions::default();
 

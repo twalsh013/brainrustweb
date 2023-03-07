@@ -18,12 +18,8 @@ eframe = { version = "0.21.0", default-features = false, features = [
 # You only need serde if you want app persistence:
 serde = { version = "1", features = ["derive"] }
 
-# native:
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tracing-subscriber = "0.3"
-
 # web:
-[target.'cfg(target_arch = "wasm32")'.dependencies]
+#[target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.6"
 tracing-wasm = "0.2"
 wasm-bindgen = "0.2.84"
@@ -34,6 +30,10 @@ gloo-utils = "0.1.6"
 web-sys = {version = "0.3.61", features = ['Document', 'console', 'Element','HtmlElement','Node','Window']}
 rfd = "0.11.1"
 lazy_static = "1.4.0"
+
+# native:
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tracing-subscriber = "0.3"
 
 [profile.release]
 opt-level = 2 # fast and small wasm
