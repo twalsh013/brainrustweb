@@ -27,6 +27,7 @@ lazy_static! {
 pub struct TemplateApp {
     // Example stuff:
     label: String,
+    #[serde(skip)]
     result: String,
     // this how you opt-out of serialization of a member
     //#[serde(skip)]
@@ -84,7 +85,10 @@ fn interpret(contents: String) -> String {
                     }
                 }
             }
-            _ => (),
+            _ => {
+                output = "Invalid file".to_string();
+                break;
+            }
         }
         code_ptr += 1;
     }
@@ -150,27 +154,11 @@ impl eframe::App for TemplateApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Super basic Rust/WASM Brain* Interpreter");
 
-            ui.horizontal(|ui| {
-                ui.label("Enter some Brain* code: ");
-                ui.text_edit_singleline(label);
-            });
-
-            //let mut result = String::new();
-            //static mut CHECKED: bool = false;
-
-            if ui.button("Run").clicked() {
+            if ui.button("Upload & Run BF File").clicked() {
                 let _contents = label.clone();
 
-                //unsafe {
-                //    CHECKED = true;
-                //}
-                //let txclone = tx.clone();
-                //let mut answer:Arc<Mutex<Vec<u8>>> = Arc::new(Mutex::new(vec![]));
-                //let answerb = answer.clone();
                 let task = AsyncFileDialog::new().pick_file();
                 wasm_bindgen_futures::spawn_local(async move {
-                    //let mut answerclone = answer.clone();
-                    //let mut stringy = answerclone.lock().unwrap();
                     let txclone = MYCHAN.lock().unwrap().0.clone();
                     let file = task.await;
                     if let Some(file) = file {
@@ -178,75 +166,19 @@ impl eframe::App for TemplateApp {
                         // If you care about wasm support you just read() the file
                         let mystring = file.read().await;
                         txclone.send(mystring).unwrap();
-                        //*stringy = mystring.clone();//= file.read().await.into();
-                        //let mystring = String::from_utf8(file.read().await).unwrap();
-
-                        //let js: JsValue = String::from_utf8(mystring).unwrap().into();
-                        //log_1(&"inner stuff".into());
-                        //log_1(&js);
-                        //drop(txclone);
                     } else {
                         log_1(&"not file".into());
                     }
                 });
-
-                //    if let Ok(msg) = rx.recv() {
-                //     //let jsmsg: JsValue = String::from_utf8(msg).unwrap().into();
-                //     log_1(&"something".into());
-                //     //log_1(&jsmsg);
-                //    } else {
-                //     log_1(&"oops".into());
-                //    }
-
-                //*result = interpret(contents);
-
-                //let tmp = answerb.lock().unwrap();
-                // let myvec = match tmp {
-                //     Ok(vec) => {
-                //         log_1(&"vector".into());
-                //         let mtx = *vec.lock().unwrap();
-                //         mtx
-                //     },
-                //     Err(arc) => {
-                //         let vect: Vec<u8> = vec![];
-                //         log_1(&"arc".into());
-                //         vect
-                //     },
-                // };
-                //let myvec = tmp.to_vec();//(&*tmp.lock().unwrap()).to_vec();
-                //log_1(&"tried some stuff".into());
-                //let js: JsValue = String::from_utf8(myvec).unwrap().into();
-                //log_1(&js);
-                //*result = String::from_utf8(myvec).unwrap();
-
-                //if let Some(picked_path) = picked_path {
-                ui.horizontal(|ui| {
-                    ui.label("Picked file:");
-                    ui.monospace("lol");
-                });
-                //}
             }
 
-            //let mut stringprint = String::new();
-
-            //unsafe {
-            //if CHECKED {
-            //log_1(&"checkum".into());
-            //match MYCHAN.lock().unwrap().1.try_recv() {
             if let Ok(msg) = MYCHAN.lock().unwrap().1.try_recv() {
                 let stmsg = String::from_utf8(msg).unwrap();
-                *result = interpret(stmsg.clone());
+                *result = interpret(stmsg);
                 let jsmsg: JsValue = result.clone().into();
                 log_1(&jsmsg);
                 log_1(&"something".into());
-                //log_1(&jsmsg);
-                //          CHECKED = false;
             };
-            //Err(TryRecvError::Empty) => log_1(&"no".into()),
-            //Err(TryRecvError::Disconnected) => log_1(&"no2".into()),
-            //}
-            //}
-            //}
 
             //ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
             ui.horizontal(|ui| {
@@ -257,20 +189,7 @@ impl eframe::App for TemplateApp {
                 ui.spacing_mut().item_spacing.x = 0.0;
                 ui.label(result.as_str());
             });
-            //});
         });
-
-        // match RXG.try_recv() {
-        //     Ok(msg) => {
-
-        //     //let jsmsg: JsValue = String::from_utf8(msg).unwrap().into();
-        //     //log_1(&msg.to_string().into());
-        //     log_1(&"something".into());
-        //     //log_1(&jsmsg);
-        //     },
-        //     Err(TryRecvError::Empty) => log_1(&"no".into()),
-        //     Err(TryRecvError::Disconnected) => log_1(&"no2".into()),
-        // }
 
         if false {
             egui::Window::new("Window").show(ctx, |ui| {
