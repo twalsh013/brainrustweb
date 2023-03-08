@@ -154,7 +154,7 @@ impl eframe::App for TemplateApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Super basic Rust/WASM Brain* Interpreter");
 
-            if ui.button("Upload & Run BF File").clicked() {
+            if ui.button("Upload BF File").clicked() {
                 let _contents = label.clone();
 
                 let task = AsyncFileDialog::new().pick_file();
@@ -172,13 +172,17 @@ impl eframe::App for TemplateApp {
                 });
             }
 
-            if let Ok(msg) = MYCHAN.lock().unwrap().1.try_recv() {
-                let stmsg = String::from_utf8(msg).unwrap();
-                *result = interpret(stmsg);
-                let jsmsg: JsValue = result.clone().into();
-                log_1(&jsmsg);
-                log_1(&"something".into());
-            };
+            if ui.button("Run BF File").clicked() {
+                if let Ok(msg) = MYCHAN.lock().unwrap().1.try_recv() {
+                    let stmsg = String::from_utf8(msg).unwrap();
+                    *result = interpret(stmsg);
+                    let jsmsg: JsValue = result.clone().into();
+                    log_1(&jsmsg);
+                    log_1(&"something".into());
+                };
+            }
+
+            
 
             //ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
             ui.horizontal(|ui| {

@@ -1,6 +1,6 @@
 {
-  "name": "egui Template PWA",
-  "short_name": "egui-template-pwa",
+  "name": "Brainf* WebApp",
+  "short_name": "bfwebapp",
   "icons": [
     {
       "src": "./icon-256.png",
