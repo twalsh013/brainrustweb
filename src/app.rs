@@ -152,8 +152,10 @@ impl eframe::App for TemplateApp {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
+                      
             ui.heading("Super basic Rust/WASM Brain* Interpreter");
 
+            ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
             if ui.button("Upload BF File").clicked() {
                 let _contents = label.clone();
 
@@ -181,6 +183,18 @@ impl eframe::App for TemplateApp {
                     log_1(&"something".into());
                 };
             }
+        });
+
+        ui.horizontal(|ui| {
+            ui.spacing_mut().item_spacing.x = 0.0;
+            ui.label("Or Enter Some BF Code Here:");
+            ui.text_edit_singleline(label);
+        });
+
+        if ui.button("Run Entered Code").clicked() {
+            let contents = label.clone();
+            *result = interpret(contents);
+        }
 
             
 
