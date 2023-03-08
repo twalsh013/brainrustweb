@@ -152,51 +152,48 @@ impl eframe::App for TemplateApp {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-                      
             ui.heading("Super basic Rust/WASM Brain* Interpreter");
 
             ui.with_layout(egui::Layout::left_to_right(egui::Align::TOP), |ui| {
-            if ui.button("Upload BF File").clicked() {
-                let _contents = label.clone();
+                if ui.button("Upload BF File").clicked() {
+                    let _contents = label.clone();
 
-                let task = AsyncFileDialog::new().pick_file();
-                wasm_bindgen_futures::spawn_local(async move {
-                    let txclone = MYCHAN.lock().unwrap().0.clone();
-                    let file = task.await;
-                    if let Some(file) = file {
-                        log_1(&"gotfile".into());
-                        // If you care about wasm support you just read() the file
-                        let mystring = file.read().await;
-                        txclone.send(mystring).unwrap();
-                    } else {
-                        log_1(&"not file".into());
-                    }
-                });
+                    let task = AsyncFileDialog::new().pick_file();
+                    wasm_bindgen_futures::spawn_local(async move {
+                        let txclone = MYCHAN.lock().unwrap().0.clone();
+                        let file = task.await;
+                        if let Some(file) = file {
+                            log_1(&"gotfile".into());
+                            // If you care about wasm support you just read() the file
+                            let mystring = file.read().await;
+                            txclone.send(mystring).unwrap();
+                        } else {
+                            log_1(&"not file".into());
+                        }
+                    });
+                }
+
+                if ui.button("Run BF File").clicked() {
+                    if let Ok(msg) = MYCHAN.lock().unwrap().1.try_recv() {
+                        let stmsg = String::from_utf8(msg).unwrap();
+                        *result = interpret(stmsg);
+                        let jsmsg: JsValue = result.clone().into();
+                        log_1(&jsmsg);
+                        log_1(&"something".into());
+                    };
+                }
+            });
+
+            ui.horizontal(|ui| {
+                ui.spacing_mut().item_spacing.x = 0.0;
+                ui.label("Or Enter Some BF Code Here:");
+                ui.text_edit_singleline(label);
+            });
+
+            if ui.button("Run Entered Code").clicked() {
+                let contents = label.clone();
+                *result = interpret(contents);
             }
-
-            if ui.button("Run BF File").clicked() {
-                if let Ok(msg) = MYCHAN.lock().unwrap().1.try_recv() {
-                    let stmsg = String::from_utf8(msg).unwrap();
-                    *result = interpret(stmsg);
-                    let jsmsg: JsValue = result.clone().into();
-                    log_1(&jsmsg);
-                    log_1(&"something".into());
-                };
-            }
-        });
-
-        ui.horizontal(|ui| {
-            ui.spacing_mut().item_spacing.x = 0.0;
-            ui.label("Or Enter Some BF Code Here:");
-            ui.text_edit_singleline(label);
-        });
-
-        if ui.button("Run Entered Code").clicked() {
-            let contents = label.clone();
-            *result = interpret(contents);
-        }
-
-            
 
             //ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
             ui.horizontal(|ui| {
