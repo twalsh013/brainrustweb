@@ -18,6 +18,8 @@ fn main() -> eframe::Result<()> {
 // when compiling to web using trunk.
 #[cfg(target_arch = "wasm32")]
 fn main() {
+    use wasm_bindgen::JsCast;
+
     // Make sure panics are logged using `console.error`.
     console_error_panic_hook::set_once();
 
@@ -27,12 +29,25 @@ fn main() {
     let web_options = eframe::WebOptions::default();
 
     wasm_bindgen_futures::spawn_local(async {
-        eframe::start_web(
-            "the_canvas_id", // hardcode it
-            web_options,
-            Box::new(|cc| Box::new(brainrustweb::TemplateApp::new(cc))),
-        )
-        .await
-        .expect("failed to start eframe");
+        let document = web_sys::window()
+            .expect("No window")
+            .document()
+            .expect("No document");
+
+        let canvas = document
+            .get_element_by_id("the_canvas_id")
+            .expect("Failed to find the_canvas_id")
+            .dyn_into::<web_sys::HtmlCanvasElement>()
+            .expect("the_canvas_id was not a HtmlCanvasElement");
+
+        let runner = eframe::WebRunner::new();
+        runner
+            .start(
+                canvas,
+                web_options,
+                Box::new(|cc| Ok(Box::new(brainrustweb::TemplateApp::new(cc)))),
+            )
+            .await
+            .expect("failed to start eframe");
     });
 }
