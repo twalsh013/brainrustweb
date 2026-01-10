@@ -6,7 +6,6 @@ pub struct TemplateApp {
     // Example stuff:
     label: String,
     result: String,
-
     // this how you opt-out of serialization of a member
     //#[serde(skip)]
     //value: f32,
@@ -14,8 +13,7 @@ pub struct TemplateApp {
 
 const TAPE_SIZE: usize = 30000;
 
-fn interpret(contents: String) -> String
-{
+fn interpret(contents: String) -> String {
     let mut tape = [0; TAPE_SIZE];
     let mut tape_ptr = 0;
     let mut code_ptr = 0;
@@ -29,12 +27,12 @@ fn interpret(contents: String) -> String
             '<' => tape_ptr -= 1,
             '+' => tape[tape_ptr] += 1,
             '-' => tape[tape_ptr] -= 1,
-            '.' => output.push(tape[tape_ptr] as char),//print!("{}", tape[tape_ptr] as char),
+            '.' => output.push(tape[tape_ptr] as char), //print!("{}", tape[tape_ptr] as char),
             ',' => {
                 let mut input = String::new();
                 std::io::stdin().read_line(&mut input).unwrap();
                 tape[tape_ptr] = input.chars().next().unwrap() as u8;
-            },
+            }
             '[' => {
                 if tape[tape_ptr] == 0 {
                     let mut nest_level = 1;
@@ -49,7 +47,7 @@ fn interpret(contents: String) -> String
                         }
                     }
                 }
-            },
+            }
             ']' => {
                 if tape[tape_ptr] != 0 {
                     let mut nest_level = 1;
@@ -64,7 +62,7 @@ fn interpret(contents: String) -> String
                         }
                     }
                 }
-            },
+            }
             _ => (),
         }
         code_ptr += 1;
@@ -72,7 +70,6 @@ fn interpret(contents: String) -> String
 
     output
 }
-
 
 impl Default for TemplateApp {
     fn default() -> Self {
@@ -110,7 +107,7 @@ impl eframe::App for TemplateApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let Self { label, result} = self;//, value } = self;
+        let Self { label, result } = self; //, value } = self;
 
         // Examples of how to create different panels and windows.
         // Pick whichever suits you.
@@ -123,7 +120,7 @@ impl eframe::App for TemplateApp {
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
-                        _frame.close();
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                     }
                 });
             });
@@ -145,14 +142,14 @@ impl eframe::App for TemplateApp {
             }
 
             //ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                ui.horizontal(|ui| {
-                    ui.spacing_mut().item_spacing.x = 0.0;
-                    ui.label("Interpreter Output:");
-                });
-                ui.horizontal(|ui| {
-                    ui.spacing_mut().item_spacing.x = 0.0;
-                    ui.label(result.as_str());
-                });
+            ui.horizontal(|ui| {
+                ui.spacing_mut().item_spacing.x = 0.0;
+                ui.label("Interpreter Output:");
+            });
+            ui.horizontal(|ui| {
+                ui.spacing_mut().item_spacing.x = 0.0;
+                ui.label(result.as_str());
+            });
             //});
         });
 

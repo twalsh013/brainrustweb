@@ -14,7 +14,7 @@ eframe = { version = "0.29", default-features = false, features = [
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
     "persistence",   # Enable restoring app state when restarting the app.
 ] }
-rfd = "0.15"         # File dialog for opening/saving files
+rfd = "0.17"         # File dialog for opening/saving files
 
 # You only need serde if you want app persistence:
 serde = { version = "1", features = ["derive"] }
