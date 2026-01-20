@@ -126,6 +126,7 @@ impl eframe::App for TemplateApp {
             });
         });
 
+        #[cfg(not(target_arch = "wasm32"))]
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Basic as hell Rust/WASM Brainfuck Interpreter");
 
@@ -134,14 +135,11 @@ impl eframe::App for TemplateApp {
                 ui.text_edit_singleline(label);
             });
 
-            //let mut result = String::new();
-
             if ui.button("Run").clicked() {
                 let contents = label.clone();
                 *result = interpret(contents);
             }
 
-            //ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
             ui.horizontal(|ui| {
                 ui.spacing_mut().item_spacing.x = 0.0;
                 ui.label("Interpreter Output:");
@@ -150,16 +148,40 @@ impl eframe::App for TemplateApp {
                 ui.spacing_mut().item_spacing.x = 0.0;
                 ui.label(result.as_str());
             });
-            //});
         });
 
-        if false {
-            egui::Window::new("Window").show(ctx, |ui| {
-                ui.label("Windows can be moved by dragging them.");
-                ui.label("They are automatically sized based on contents.");
-                ui.label("You can turn on resizing and scrolling if you like.");
-                ui.label("You would normally choose either panels OR windows.");
-            });
+        #[cfg(target_arch = "wasm32")]
+        {
+            // Empty background panel for the window to float over
+            egui::CentralPanel::default().show(ctx, |_ui| {});
+
+            egui::Window::new("Brainfuck Interpreter")
+                .default_pos([100.0, 100.0])
+                .default_size([400.0, 300.0])
+                .collapsible(true)
+                .resizable(true)
+                .show(ctx, |ui| {
+                    ui.heading("Basic as hell Rust/WASM Brainfuck Interpreter");
+
+                    ui.horizontal(|ui| {
+                        ui.label("Enter some Brainfuck code: ");
+                        ui.text_edit_singleline(label);
+                    });
+
+                    if ui.button("Run").clicked() {
+                        let contents = label.clone();
+                        *result = interpret(contents);
+                    }
+
+                    ui.horizontal(|ui| {
+                        ui.spacing_mut().item_spacing.x = 0.0;
+                        ui.label("Interpreter Output:");
+                    });
+                    ui.horizontal(|ui| {
+                        ui.spacing_mut().item_spacing.x = 0.0;
+                        ui.label(result.as_str());
+                    });
+                });
         }
     }
 }
